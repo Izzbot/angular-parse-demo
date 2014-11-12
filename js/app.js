@@ -12,7 +12,7 @@
 //sending a DELETE to this URL + '/' + task.objectId will delete an existing task
 var tasksUrl = 'https://api.parse.com/1/classes/tasks';
 
-angular.module('ToDoApp', [])
+angular.module('ToDoApp', ['ui.bootstrap'])
     .config(function($httpProvider) {
         //Parse required two extra headers sent with every HTTP request: X-Parse-Application-Id, X-Parse-REST-API-Key
         //the first needs to be set to your application's ID value
@@ -59,11 +59,15 @@ angular.module('ToDoApp', [])
                 })
                 .error(function(err) {
                     $scope.errorMessage = err;
+                })
+                .finally(function() {
+                    // Nothing for finally
                 });
         };
 
         // Updates a task
         $scope.updateTask = function(task) {
+            $scope.loading = true;
           $http.put(tasksUrl + '/' + task.objectId, task)
               .success(function() {
                 // Don't need to to much upon a success
@@ -72,7 +76,29 @@ angular.module('ToDoApp', [])
                   $scope.errorMessage = err;
               })
               .finally(function() {
-                // Nothing for finally
+                  $scope.loading = false;
               });
+        };
+
+
+        // Changes a vote
+        $scope.changeVote = function(task, amount) {
+            $scope.loading = true;
+            $http.put(tasksUrl + '/' + task.objectId, {
+                votes: {
+                    __op: 'Increment',
+                    amount: amount
+                }
+            })
+                .success(function(responseData) {
+                    task.votes = responseData.votes;
+                })
+                .error(function(err) {
+                    $scope.errorMessage = err;
+                })
+                .finally(function() {
+                   $scope.loading = false;
+                });
+
         };
     });

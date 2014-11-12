@@ -13,3 +13,7 @@ body {
     text-decoration: line-through;
     color: #999;
 }
+
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
